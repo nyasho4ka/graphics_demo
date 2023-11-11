@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
+    <None Include="..\.gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\rock.jpg">
