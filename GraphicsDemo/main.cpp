@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
@@ -60,8 +61,10 @@ unsigned int indices[] = {
    22, 23, 20,
 };
 
+const float DELTA_THRESHOLD = 1e-6;
 glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -3.0f);
 float cameraSpeed = 5.0;
+float prev_xpos, prev_ypos = 0.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, float deltaTime, Camera& camera);
@@ -180,6 +183,7 @@ int main()
 	// Viewport
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glEnable(GL_DEPTH_TEST);
 
 	// Buffers
@@ -270,6 +274,14 @@ void processInput(GLFWwindow* window, float deltaTime, Camera& camera)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
 
+	// mouse input
+	double curr_xpos, curr_ypos = 0.0f;
+	glfwGetCursorPos(window, &curr_xpos, &curr_ypos);
+	camera.updateRotation(curr_xpos - prev_xpos, curr_ypos - prev_ypos);
+	prev_xpos = curr_xpos;
+	prev_ypos = curr_ypos;
+
+	// keyboard input
 	float forwardDelta = 0.0f;
 	float rightDelta = 0.0f;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -277,8 +289,8 @@ void processInput(GLFWwindow* window, float deltaTime, Camera& camera)
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		forwardDelta -= deltaTime * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		rightDelta   -= deltaTime * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		rightDelta   += deltaTime * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		rightDelta   -= deltaTime * cameraSpeed;
 	camera.updatePosition(glm::vec3(rightDelta, 0.0f, forwardDelta));
 }
